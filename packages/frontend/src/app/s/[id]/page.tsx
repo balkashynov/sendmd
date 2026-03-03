@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { sileo } from "sileo";
-import type { DocResponse } from "@sendmd/shared";
+import type { DocResponse } from "@/types";
 import { TopBar } from "@/components/TopBar";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { ShareModal } from "@/components/ShareModal";

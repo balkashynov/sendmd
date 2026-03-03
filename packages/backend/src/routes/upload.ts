@@ -1,7 +1,7 @@
 import { Router, type Router as RouterType } from "express";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { nanoid } from "nanoid";
-import type { UploadRequest, UploadResponse, ErrorResponse, TtlHours } from "@sendmd/shared";
+import type { UploadRequest, UploadResponse, ErrorResponse, TtlHours } from "../types.js";
 import { pool } from "../services/db.js";
 import { r2, BUCKET } from "../services/storage.js";
 import { hasCapacity, recordBandwidth } from "../services/bandwidth.js";

@@ -1,5 +1,5 @@
 import { Router, type Router as RouterType } from "express";
-import type { ErrorResponse } from "@sendmd/shared";
+import type { ErrorResponse } from "../types.js";
 import { pool } from "../services/db.js";
 
 export const deleteRouter: RouterType = Router();

@@ -8,7 +8,6 @@
     "start": "next start"
   },
   "dependencies": {
-    "@sendmd/shared": "workspace:*",
     "html2pdf.js": "^0.14.0",
     "next": "^14.2.23",
     "react": "^18.3.1",

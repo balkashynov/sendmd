@@ -1,6 +1,6 @@
 import { Router, type Router as RouterType } from "express";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
-import type { DocResponse, ErrorResponse } from "@sendmd/shared";
+import type { DocResponse, ErrorResponse } from "../types.js";
 import { pool } from "../services/db.js";
 import { r2, BUCKET } from "../services/storage.js";
 import { recordBandwidth } from "../services/bandwidth.js";

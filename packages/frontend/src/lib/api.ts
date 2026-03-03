@@ -1,4 +1,4 @@
-import type { UploadResponse, DocResponse, ErrorResponse, TtlHours } from "@sendmd/shared";
+import type { UploadResponse, DocResponse, ErrorResponse, TtlHours } from "@/types";
 
 export async function uploadDoc(content: string, ttlHours: TtlHours): Promise<UploadResponse> {
   const res = await fetch("/api/upload", {

@@ -1,11 +1,12 @@
 {
   "name": "sendmd",
   "private": true,
+  "packageManager": "pnpm@10.12.3",
   "scripts": {
     "dev": "concurrently \"pnpm --filter @sendmd/backend dev\" \"pnpm --filter @sendmd/frontend dev\"",
     "dev:backend": "pnpm --filter @sendmd/backend dev",
     "dev:frontend": "pnpm --filter @sendmd/frontend dev",
-    "build": "pnpm --filter @sendmd/shared build && pnpm --filter @sendmd/backend build && pnpm --filter @sendmd/frontend build"
+    "build": "pnpm --filter @sendmd/backend build && pnpm --filter @sendmd/frontend build"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
