@@ -18,10 +18,11 @@ export interface DropZoneHandle {
 interface DropZoneProps {
   onContentChange?: (content: string) => void;
   readingMode?: boolean;
+  onOpenFile?: () => void;
 }
 
 export const DropZone = forwardRef<DropZoneHandle, DropZoneProps>(
-  function DropZone({ onContentChange, readingMode }, ref) {
+  function DropZone({ onContentChange, readingMode, onOpenFile }, ref) {
     const [content, setContent] = useState(() => {
       if (typeof window === "undefined") return "";
       // 1. Edit from shared viewer — highest priority, then clear
@@ -42,6 +43,7 @@ export const DropZone = forwardRef<DropZoneHandle, DropZoneProps>(
     const previewScrollRef = useRef<HTMLDivElement>(null);
 
     const editing = content.length > 0;
+    const [mobileEditing, setMobileEditing] = useState(false);
     const [visualLineCount, setVisualLineCount] = useState(1);
 
     // Notify parent of restored content on mount
@@ -49,6 +51,11 @@ export const DropZone = forwardRef<DropZoneHandle, DropZoneProps>(
       if (content) onContentChange?.(content);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Reset mobileEditing when content is cleared
+    useEffect(() => {
+      if (!content) setMobileEditing(false);
+    }, [content]);
 
     // Persist draft: sessionStorage for this tab, localStorage for new tabs
     useEffect(() => {
@@ -258,7 +265,7 @@ export const DropZone = forwardRef<DropZoneHandle, DropZoneProps>(
         {/* Splitscreen — editor + preview side by side */}
         <div
           className="w-full h-full grid grid-cols-[1fr] md:grid-cols-[1fr_1px_1fr] border-t border-b border-rule transition-opacity duration-300 ease-in-out"
-          style={editing ? {
+          style={(editing || mobileEditing) ? {
             opacity: readingMode ? 0 : 1,
             pointerEvents: readingMode ? "none" : "auto",
           } : { position: "absolute", opacity: 0 }}
@@ -301,23 +308,47 @@ export const DropZone = forwardRef<DropZoneHandle, DropZoneProps>(
         </div>
 
         {/* Prompt overlay — shown on top when no content */}
-        {!editing && (
+        {!editing && !mobileEditing && (
           <div
             className="relative z-[1] w-full max-w-[600px] h-[70vh] max-h-[700px] bg-parchment flex flex-col justify-center items-center cursor-text transition-all duration-[400ms] ease-in-out border border-transparent hover:border-black/5 hover:bg-ink/5"
             onClick={handleCanvasClick}
           >
-            <div className="text-center pointer-events-none animate-breathe">
-              <span className="font-serif text-[38px] leading-[1.2] text-ink font-normal block mb-6 md:text-[38px] max-md:text-[28px]">
+            {/* Desktop prompt */}
+            <div className="text-center pointer-events-none animate-breathe max-md:hidden">
+              <span className="font-serif text-[38px] leading-[1.2] text-ink font-normal block mb-6">
                 drop{" "}
-                <span className="font-serif italic text-muted text-[32px] mx-3 opacity-50 max-md:text-[24px]">
+                <span className="font-serif italic text-muted text-[32px] mx-3 opacity-50">
                   /
                 </span>{" "}
                 paste
               </span>
-              <span className="font-serif text-[38px] leading-[1.2] text-ink font-normal block max-md:text-[28px]">
+              <span className="font-serif text-[38px] leading-[1.2] text-ink font-normal block">
                 start typing
-                <span className="inline-block w-[2px] h-[36px] bg-ink ml-2 align-text-bottom animate-blink max-md:h-[28px]" />
+                <span className="inline-block w-[2px] h-[36px] bg-ink ml-2 align-text-bottom animate-blink" />
               </span>
+            </div>
+
+            {/* Mobile prompt — two action buttons */}
+            <div className="hidden max-md:flex flex-col gap-4 w-full max-w-[260px]">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMobileEditing(true);
+                  requestAnimationFrame(() => textareaRef.current?.focus());
+                }}
+                className="w-full py-4 font-serif text-[22px] text-ink border border-ink bg-transparent hover:bg-ink hover:text-parchment transition-colors cursor-pointer"
+              >
+                Start typing
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenFile?.();
+                }}
+                className="w-full py-4 font-serif text-[22px] text-ink border border-ink bg-transparent hover:bg-ink hover:text-parchment transition-colors cursor-pointer"
+              >
+                Open file
+              </button>
             </div>
           </div>
         )}

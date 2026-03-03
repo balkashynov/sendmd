@@ -238,7 +238,7 @@ export default function Home() {
           <div className="absolute top-1/2 -left-10 -right-10 h-px bg-rule z-0 pointer-events-none max-md:-left-5 max-md:-right-5" />
         )}
 
-        <DropZone ref={dropZoneRef} onContentChange={setContent} readingMode={readingMode} />
+        <DropZone ref={dropZoneRef} onContentChange={setContent} readingMode={readingMode} onOpenFile={() => fileInputRef.current?.click()} />
       </main>
 
       {/* Footer */}
