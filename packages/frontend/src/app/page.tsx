@@ -267,7 +267,7 @@ export default function Home() {
 
       {/* Full-page drag overlay */}
       <div
-        className={`absolute inset-0 bg-parchment/90 z-50 flex justify-center items-center transition-opacity duration-300 pointer-events-none ${isDragging ? "opacity-100" : "opacity-0"}`}
+        className={`absolute inset-0 bg-parchment/80 backdrop-blur-sm z-50 flex justify-center items-center transition-opacity duration-300 pointer-events-none ${isDragging ? "opacity-100" : "opacity-0"}`}
       >
         <span className="font-serif italic text-[32px]">release to open</span>
       </div>

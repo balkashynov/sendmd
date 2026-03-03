@@ -261,7 +261,7 @@ export const DropZone = forwardRef<DropZoneHandle, DropZoneProps>(
           style={editing ? {
             opacity: readingMode ? 0 : 1,
             pointerEvents: readingMode ? "none" : "auto",
-          } : { position: "absolute", opacity: 0, pointerEvents: "none" }}
+          } : { position: "absolute", opacity: 0 }}
         >
           <div className="relative">
             <div
