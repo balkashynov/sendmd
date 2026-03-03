@@ -14,7 +14,7 @@ const MAX_SIZE = 256 * 1024; // 256KB
 
 // POST / — upload a markdown document
 uploadRouter.post("/", writeRateLimit, bandwidthGuard, async (req, res) => {
-  const ip = req.headers["x-forwarded-for"] as string || req.socket.remoteAddress || "unknown";
+  const ip = req.ip || "unknown";
 
   try {
     const { content, ttl_hours } = req.body as UploadRequest;

@@ -1,20 +1,25 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Link from "next/link";
 import { TextMorph } from "torph/react";
 import { ShareMenu } from "./ShareMenu";
-import type { TtlHours } from "@sendmd/shared";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface TopBarProps {
   status?: string;
   toastVisible?: boolean;
   onOpen?: () => void;
   onDownload?: (format: "md" | "txt" | "pdf") => void;
-  onShare?: (ttlHours: TtlHours) => void;
+  onCopyLink?: () => void;
+  onEdit?: () => void;
+  onToggleReading?: () => void;
+  readingMode?: boolean;
   hasContent?: boolean;
+  openLabel?: string;
 }
 
-export function TopBar({ status = "sendmd", toastVisible, onOpen, onDownload, onShare, hasContent }: TopBarProps) {
+export function TopBar({ status = "sendmd", toastVisible, onOpen, onDownload, onCopyLink, onEdit, onToggleReading, readingMode, hasContent, openLabel = "Open" }: TopBarProps) {
   const [shareOpen, setShareOpen] = useState(false);
 
   const handleShareClick = useCallback(() => {
@@ -33,22 +38,34 @@ export function TopBar({ status = "sendmd", toastVisible, onOpen, onDownload, on
     setShareOpen(false);
   }, []);
 
+  const btnClass = "text-[11px] font-medium uppercase tracking-[0.08em] text-ink opacity-80 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0";
+
   return (
-    <nav className="flex items-center justify-between h-full pt-5">
+    <nav className="grid grid-cols-[1fr_auto_1fr] items-center h-full pt-2">
       <div className="flex gap-6">
-        <button
-          onClick={onOpen}
-          className="text-[11px] font-medium uppercase tracking-[0.08em] text-ink opacity-80 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0"
-        >
-          Open
-        </button>
+        {onOpen && (
+          <button onClick={onOpen} className={btnClass}>
+            {openLabel}
+          </button>
+        )}
+        {onEdit && (
+          <button onClick={onEdit} className={btnClass}>
+            Edit
+          </button>
+        )}
+        {onToggleReading && (
+          <button onClick={onToggleReading} className={btnClass}>
+            {readingMode ? "Edit" : "Read"}
+          </button>
+        )}
       </div>
 
-      <div className={`font-serif italic text-2xl tracking-[-0.02em] transition-opacity duration-300 ${toastVisible ? "opacity-0" : "opacity-100"}`}>
+      <Link href="/" className={`font-serif italic text-2xl tracking-[-0.02em] transition-opacity duration-300 no-underline text-ink ${toastVisible ? "opacity-0" : "opacity-100"}`}>
         <TextMorph>{status}</TextMorph>
-      </div>
+      </Link>
 
-      <div className="relative flex gap-6">
+      <div className="relative flex gap-6 justify-end items-center">
+        <ThemeToggle />
         <button
           onClick={handleShareClick}
           className={`text-[11px] font-medium uppercase tracking-[0.08em] text-ink transition-opacity bg-transparent border-none cursor-pointer p-0 ${hasContent ? "opacity-80 hover:opacity-100" : "opacity-30 cursor-default"}`}
@@ -60,7 +77,7 @@ export function TopBar({ status = "sendmd", toastVisible, onOpen, onDownload, on
           open={shareOpen && !!hasContent}
           onClose={handleClose}
           onDownload={handleDownload}
-          onShare={onShare}
+          onCopyLink={onCopyLink}
         />
       </div>
     </nav>

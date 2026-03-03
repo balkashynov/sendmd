@@ -11,7 +11,7 @@ export const docRouter: RouterType = Router();
 // GET /:id — retrieve a document by short id
 docRouter.get("/:id", readRateLimit, bandwidthGuard, async (req, res) => {
   const { id } = req.params;
-  const viewerIp = req.headers["x-forwarded-for"] as string || req.socket.remoteAddress || "unknown";
+  const viewerIp = req.ip || "unknown";
   const referer = req.headers.referer || null;
 
   try {

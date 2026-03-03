@@ -9,6 +9,9 @@ import { cleanupExpiredDocs } from "./utils/cleanup.js";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust reverse proxy (Railway) so req.ip uses X-Forwarded-For
+app.set("trust proxy", true);
+
 app.use(cors());
 app.use(express.json({ limit: "512kb" }));
 

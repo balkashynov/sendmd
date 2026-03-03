@@ -64,9 +64,7 @@ const writeGlobal = freshCounter();
 const readGlobal = freshCounter();
 
 function getIp(req: Parameters<RequestHandler>[0]): string {
-  return (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim()
-    || req.socket.remoteAddress
-    || "unknown";
+  return req.ip || "unknown";
 }
 
 function getOrCreateIp(map: Map<string, WindowCounter>, ip: string): WindowCounter {

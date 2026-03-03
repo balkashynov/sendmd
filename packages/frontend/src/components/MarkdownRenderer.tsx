@@ -12,9 +12,8 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
     <div
       data-preview
       className="
-        h-full overflow-y-auto p-10
+        p-10 max-md:px-4 max-md:py-6
         font-serif text-ink
-        [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden
       "
     >
       {!content ? (
@@ -47,19 +46,19 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             const isBlock = className?.includes("language-");
             if (isBlock) {
               return (
-                <code className="block bg-[#f4f3ef] rounded px-4 py-3 font-mono text-[14px] leading-[1.6] overflow-x-auto mb-4">
+                <code className="block bg-code-bg rounded px-4 py-3 font-mono text-[14px] leading-[1.6] overflow-x-auto mb-4">
                   {children}
                 </code>
               );
             }
             return (
-              <code className="bg-[#f4f3ef] rounded px-1.5 py-0.5 font-mono text-[14px]">
+              <code className="bg-code-bg rounded px-1.5 py-0.5 font-mono text-[14px]">
                 {children}
               </code>
             );
           },
           pre: ({ children }) => (
-            <pre className="bg-[#f4f3ef] rounded p-4 overflow-x-auto mb-4 font-mono text-[14px] leading-[1.6]">
+            <pre className="bg-code-bg rounded p-4 overflow-x-auto mb-4 font-mono text-[14px] leading-[1.6]">
               {children}
             </pre>
           ),
@@ -80,7 +79,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             </div>
           ),
           th: ({ children }) => (
-            <th className="border border-rule px-3 py-2 text-left font-semibold bg-[#f4f3ef]">{children}</th>
+            <th className="border border-rule px-3 py-2 text-left font-semibold bg-code-bg">{children}</th>
           ),
           td: ({ children }) => (
             <td className="border border-rule px-3 py-2">{children}</td>

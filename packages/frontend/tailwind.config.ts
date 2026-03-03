@@ -6,10 +6,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        parchment: "#F9F8F4",
-        ink: "#1F1F1F",
-        muted: "#666666",
-        rule: "#E6E4DD",
+        parchment: "var(--parchment)",
+        ink: "var(--ink)",
+        muted: "var(--muted)",
+        rule: "var(--rule)",
+        "code-bg": "var(--code-bg)",
       },
       fontFamily: {
         serif: ['"Times New Roman"', "Times", "serif"],

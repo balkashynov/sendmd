@@ -1,31 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { TtlHours } from "@sendmd/shared";
+import { useEffect, useRef } from "react";
 
 interface ShareMenuProps {
   open: boolean;
   onClose: () => void;
   onDownload: (format: "md" | "txt" | "pdf") => void;
-  onShare?: (ttlHours: TtlHours) => void;
+  onCopyLink?: () => void;
 }
 
-const TTL_OPTIONS: { label: string; value: TtlHours }[] = [
-  { label: "1 hour", value: 1 },
-  { label: "24 hours", value: 24 },
-  { label: "7 days", value: 168 },
-  { label: "30 days", value: 720 },
-];
-
-export function ShareMenu({ open, onClose, onDownload, onShare }: ShareMenuProps) {
+export function ShareMenu({ open, onClose, onDownload, onCopyLink }: ShareMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
-  const [showTtl, setShowTtl] = useState(false);
 
   useEffect(() => {
-    if (!open) {
-      setShowTtl(false);
-      return;
-    }
+    if (!open) return;
     const handleClick = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         onClose();
@@ -41,19 +29,6 @@ export function ShareMenu({ open, onClose, onDownload, onShare }: ShareMenuProps
       document.removeEventListener("keydown", handleEsc);
     };
   }, [open, onClose]);
-
-  const handleCopyLinkClick = useCallback(() => {
-    setShowTtl((prev) => !prev);
-  }, []);
-
-  const handleTtlSelect = useCallback(
-    (ttl: TtlHours) => {
-      onShare?.(ttl);
-      setShowTtl(false);
-      onClose();
-    },
-    [onShare, onClose]
-  );
 
   if (!open) return null;
 
@@ -77,26 +52,13 @@ export function ShareMenu({ open, onClose, onDownload, onShare }: ShareMenuProps
       </button>
       <div className="h-px bg-rule mx-3 my-1" />
       <button
-        onClick={handleCopyLinkClick}
-        className={`${itemClass} ${!onShare ? "opacity-30 cursor-not-allowed" : ""}`}
-        disabled={!onShare}
+        onClick={() => { onCopyLink?.(); onClose(); }}
+        className={`${itemClass} ${!onCopyLink ? "opacity-30 cursor-not-allowed" : ""}`}
+        disabled={!onCopyLink}
       >
         Copy link
-        {!onShare && <span className="text-[10px] normal-case tracking-normal text-muted ml-2">soon</span>}
+        {!onCopyLink && <span className="text-[10px] normal-case tracking-normal text-muted ml-2">soon</span>}
       </button>
-      {showTtl && onShare && (
-        <div className="border-t border-rule mt-1 pt-1">
-          {TTL_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => handleTtlSelect(opt.value)}
-              className={`${itemClass} pl-8 text-[11px] normal-case`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

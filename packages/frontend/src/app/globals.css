@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --parchment: #F9F8F4;
+  --ink: #1F1F1F;
+  --muted: #666666;
+  --rule: #E6E4DD;
+  --code-bg: #f4f3ef;
+}
+
+[data-theme="dark"] {
+  --parchment: #171717;
+  --ink: #E8E6E1;
+  --muted: #888888;
+  --rule: #2E2E2E;
+  --code-bg: #1E1E1E;
+}
+
 *,
 *::before,
 *::after {
@@ -13,10 +29,25 @@
 body, html {
   height: 100%;
   width: 100%;
-  background-color: #F9F8F4;
-  color: #1F1F1F;
+  background-color: var(--parchment);
+  color: var(--ink);
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* View transition for theme toggle — circular clip-path reveal */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
 }

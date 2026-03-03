@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { sileo } from "sileo";
-import type { TtlHours } from "@sendmd/shared";
 import { TopBar } from "@/components/TopBar";
 import { DropZone } from "@/components/DropZone";
+import { ShareModal } from "@/components/ShareModal";
 import { uploadDoc } from "@/lib/api";
 
 export default function Home() {
@@ -12,10 +12,25 @@ export default function Home() {
   const [isDragging, setIsDragging] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [statusOverride, setStatusOverride] = useState<string | null>(null);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [readingMode, setReadingMode] = useState(false);
   const dragCounter = useRef(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dropZoneRef = useRef<{ handleIncomingText: (text: string) => void }>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // CMD+O to open file
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "o") {
+        e.preventDefault();
+        fileInputRef.current?.click();
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
+
 
   const showToast = useCallback((type: "error" | "success", opts: Parameters<typeof sileo.error>[0]) => {
     const duration = opts.duration ?? 6000;
@@ -122,30 +137,17 @@ export default function Home() {
     [content, showToast]
   );
 
-  const handleShare = useCallback(
-    async (ttlHours: TtlHours) => {
-      if (!content) return;
-      try {
-        const result = await uploadDoc(content, ttlHours);
-        const fullUrl = `${window.location.origin}${result.url}`;
-        await navigator.clipboard.writeText(fullUrl);
-        setStatusOverride("shared");
-        setTimeout(() => setStatusOverride(null), 2000);
-        showToast("success", {
-          title: "Link copied!",
-          description: fullUrl,
-          duration: 5000,
-        });
-      } catch (err) {
-        showToast("error", {
-          title: "Share failed",
-          description: err instanceof Error ? err.message : "Something went wrong",
-          duration: 4000,
-        });
-      }
-    },
-    [content, showToast]
-  );
+  const handleCopyLink = useCallback(() => {
+    setShareModalOpen(true);
+  }, []);
+
+  const handleShareConfirm = useCallback(async (): Promise<string> => {
+    const result = await uploadDoc(content, 168); // 7 days
+    const fullUrl = `${window.location.origin}${result.url}`;
+    setStatusOverride("shared");
+    setTimeout(() => setStatusOverride(null), 2000);
+    return fullUrl;
+  }, [content]);
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -213,9 +215,9 @@ export default function Home() {
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-    <div className="grid grid-rows-[80px_1fr_120px] h-full max-w-[1600px] mx-auto px-10 relative max-md:px-5 max-md:grid-rows-[60px_1fr_auto] max-md:h-[100dvh]">
+    <div className={`grid grid-rows-[80px_1fr_56px] h-full mx-auto px-10 relative max-md:px-5 max-md:grid-rows-[60px_1fr_auto] max-md:h-[100dvh] max-w-[1800px]`}>
       {/* Nav header */}
-      <TopBar status={statusOverride ?? (editing ? "editing" : "sendmd")} toastVisible={toastVisible} onOpen={handleOpen} onDownload={handleDownload} onShare={editing ? handleShare : undefined} hasContent={editing} />
+      <TopBar status={statusOverride ?? (editing ? (readingMode ? "reading" : "editing") : "sendmd")} toastVisible={toastVisible} onOpen={handleOpen} onDownload={handleDownload} onCopyLink={editing ? handleCopyLink : undefined} hasContent={editing} onToggleReading={editing ? () => setReadingMode((r) => !r) : undefined} readingMode={readingMode} />
       <input
         ref={fileInputRef}
         type="file"
@@ -236,44 +238,32 @@ export default function Home() {
           <div className="absolute top-1/2 -left-10 -right-10 h-px bg-rule z-0 pointer-events-none max-md:-left-5 max-md:-right-5" />
         )}
 
-        <DropZone ref={dropZoneRef} onContentChange={setContent} />
+        <DropZone ref={dropZoneRef} onContentChange={setContent} readingMode={readingMode} />
       </main>
 
       {/* Footer */}
-      <footer className="grid grid-cols-3 pt-6 border-t border-rule items-start max-md:grid-cols-1 max-md:gap-6 max-md:pb-6 max-md:border-t-0">
-        <div className="flex flex-col gap-2">
-          <span className="text-[10px] uppercase tracking-[0.06em] text-muted mb-1">
-            Status
-          </span>
-          <span className="text-[11px] text-ink leading-[1.4] max-w-[200px]">
-            {editing ? (
-              <>Editing &middot; {lineCount} {lineCount === 1 ? "line" : "lines"} &middot; {wordCount} {wordCount === 1 ? "word" : "words"}</>
-            ) : (
-              <>Ready for input<br />Markdown supported</>
-            )}
-          </span>
-        </div>
-
-        <div className="flex flex-col gap-2 max-md:hidden">
-          <span className="text-[10px] uppercase tracking-[0.06em] text-muted mb-1">
-            Shortcuts
-          </span>
-          <span className="text-[11px] text-ink leading-[1.4] max-w-[200px]">
-            CMD+V to paste<br />
-            CMD+O to open
-          </span>
-        </div>
-
-        <div className="flex flex-col gap-2 max-md:hidden">
-          <span className="text-[10px] uppercase tracking-[0.06em] text-muted mb-1">
-            Info
-          </span>
-          <span className="text-[11px] text-ink leading-[1.4] max-w-[200px]">
-            Markdown to shareable link
-          </span>
-        </div>
+      <footer className="flex items-center gap-6 pt-3 border-t border-rule max-md:pb-4 max-md:border-t-0">
+        <span className="text-[11px] text-ink leading-[1.4]">
+          {editing ? (
+            <>{lineCount} {lineCount === 1 ? "line" : "lines"} &middot; {wordCount} {wordCount === 1 ? "word" : "words"} &middot; {Math.max(1, Math.ceil(wordCount / 200))} min read</>
+          ) : (
+            <>Ready for input &middot; Markdown supported</>
+          )}
+        </span>
+        <span className="text-[11px] text-muted leading-[1.4] max-md:hidden">
+          CMD+V paste &middot; CMD+O open
+        </span>
+        <span className="text-[11px] text-muted leading-[1.4] ml-auto max-md:hidden">
+          Made by <a href="https://balk.sh" target="_blank" rel="noopener noreferrer" className="underline hover:opacity-70 transition-opacity text-ink">me</a>
+        </span>
       </footer>
     </div>
+
+      <ShareModal
+        open={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        onConfirm={handleShareConfirm}
+      />
 
       {/* Full-page drag overlay */}
       <div
