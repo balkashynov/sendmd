@@ -330,27 +330,32 @@ export const DropZone = forwardRef<DropZoneHandle, DropZoneProps>(
               </span>
             </div>
 
-            {/* Mobile prompt — two action buttons */}
-            <div className="hidden max-md:flex flex-col gap-4 w-full max-w-[260px]">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setMobileEditing(true);
-                  requestAnimationFrame(() => textareaRef.current?.focus());
-                }}
-                className="w-full py-4 font-serif text-[22px] text-ink border border-ink bg-transparent hover:bg-ink hover:text-parchment transition-colors cursor-pointer"
-              >
-                Start typing
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpenFile?.();
-                }}
-                className="w-full py-4 font-serif text-[22px] text-ink border border-ink bg-transparent hover:bg-ink hover:text-parchment transition-colors cursor-pointer"
-              >
-                Open file
-              </button>
+            {/* Mobile prompt — inline with slash separator */}
+            <div className="hidden max-md:flex flex-col items-center animate-breathe">
+              <span className="font-serif text-[28px] leading-[1.2] text-ink font-normal">
+                <span
+                  className="cursor-pointer hover:opacity-60 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMobileEditing(true);
+                    requestAnimationFrame(() => textareaRef.current?.focus());
+                  }}
+                >
+                  start typing
+                </span>
+                <span className="font-serif italic text-muted text-[24px] mx-3 opacity-50">
+                  /
+                </span>
+                <span
+                  className="cursor-pointer hover:opacity-60 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenFile?.();
+                  }}
+                >
+                  open file
+                </span>
+              </span>
             </div>
           </div>
         )}
