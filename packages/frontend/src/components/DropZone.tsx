@@ -41,6 +41,7 @@ export const DropZone = forwardRef<DropZoneHandle, DropZoneProps>(
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const editorScrollRef = useRef<HTMLDivElement>(null);
     const previewScrollRef = useRef<HTMLDivElement>(null);
+    const splitPreviewScrollRef = useRef<HTMLDivElement>(null);
 
     const editing = content.length > 0;
     const [mobileEditing, setMobileEditing] = useState(false);
@@ -301,9 +302,10 @@ export const DropZone = forwardRef<DropZoneHandle, DropZoneProps>(
           <div className="bg-rule max-md:hidden" />
 
           <div className="relative max-md:hidden">
-            <div className="absolute inset-0 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div ref={splitPreviewScrollRef} className="absolute inset-0 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <MarkdownRenderer content={content} />
             </div>
+            <ScrollRail content={content} scrollRef={splitPreviewScrollRef} align="left" />
           </div>
         </div>
 
