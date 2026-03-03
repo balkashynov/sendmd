@@ -1,0 +1,17 @@
+{
+  "name": "sendmd",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @sendmd/backend dev\" \"pnpm --filter @sendmd/frontend dev\"",
+    "dev:backend": "pnpm --filter @sendmd/backend dev",
+    "dev:frontend": "pnpm --filter @sendmd/frontend dev",
+    "build": "pnpm --filter @sendmd/shared build && pnpm --filter @sendmd/backend build && pnpm --filter @sendmd/frontend build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}

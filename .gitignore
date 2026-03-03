@@ -1,0 +1,8 @@
+node_modules
+dist
+.env
+.next
+*.tsbuildinfo
+skills-lock.json
+.agents/
+.claude*
